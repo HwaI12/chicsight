@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/hwai12/DS/B2/3Q/AI-design/No.6/mlruns/988365773801074260/00ab201545e34ee8b64bb470e6bb837d/artifacts
+end_time: 1698906794346
+entry_point_name: ''
+experiment_id: '988365773801074260'
+lifecycle_stage: active
+run_id: 00ab201545e34ee8b64bb470e6bb837d
+run_name: ResNet_16_<class 'torch.optim.adam.Adam'>
+run_uuid: 00ab201545e34ee8b64bb470e6bb837d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1698906586612
+status: 3
+tags: []
+user_id: hwai12

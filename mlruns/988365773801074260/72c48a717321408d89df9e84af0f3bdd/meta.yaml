@@ -1,0 +1,16 @@
+artifact_uri: file:///Users/hwai12/DS/B2/3Q/AI-design/No.6/mlruns/988365773801074260/72c48a717321408d89df9e84af0f3bdd/artifacts
+deleted_time: 1698907998251
+end_time: null
+entry_point_name: ''
+experiment_id: '988365773801074260'
+lifecycle_stage: deleted
+run_id: 72c48a717321408d89df9e84af0f3bdd
+run_name: ResNet_16_<class 'torch.optim.adagrad.Adagrad'>
+run_uuid: 72c48a717321408d89df9e84af0f3bdd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1698907932121
+status: 1
+tags: []
+user_id: hwai12

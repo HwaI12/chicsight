@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/no06.css">
+    <title>AIデザイン演習1</title>
+</head>
+
+<body>
+    <div id="outer">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div id="detail0">
+                        <div class="detail0-container">
+                            <h2>スタイル、君流に。</h2>
+                            <div class="chicsight">
+                                <h3>ChicSight</h3>
+                                <p>見る目が変わる。あなたのスタイルにぴったりのメガネを、<br>ただひとつのタップで。</p>
+                            </div>
+                            <div class="shindan">
+                                <h3>パーソナルスタイル診断</h3>
+                                <p>日々の彩るメガネ。あなたのスタイルに合わせた一本を。</p>
+                            </div>
+                            <p>今、新しい自分を発見する旅に出よう。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div id="detail1">
+                        <h1>ChicSight</h1>
+                        <form action="/predict" method="post" enctype="multipart/form-data">
+                            <label>
+                                <span id="labelText">画像を選択してください</span>
+                                <input type="file" name="file" accept="image/*" capture="camera" required
+                                    onchange="displayImage(this)" style="display:none;">
+                                <img id="uploadedImage" class="preview-image" style="display:none;">
+                            </label>
+                            {% if request.path == '/predict/' %}
+                            {% if result_text %}
+                            <div class="result">
+                                <h3>分類結果</h3>
+                                <p>{{ '・'.join(result_text) }}</p>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            <div class="button-container">
+                                <a href="/" class="btn">リセット</a>
+                                <button type="submit">　実行　</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div id="detail2">
+                        <form action="/predict_glasses" method="post" enctype="multipart/form-data">
+                            <div id="style-quiz" class="style-quiz-container">
+                                <h3>パーソナルスタイル診断</h3>
+                                <p>短い診断で、あなたの完璧なメガネスタイルを見つけましょう。</p>
+
+                                {% if request.path == '/' %}
+                                <div class="quiz-question" id="question1">
+                                    <p>利用シーン</p>
+                                    <div class="quiz-btn">
+                                        <label class="radio-label">
+                                            <input type="radio" name="weekend_activity" value="formal" required>オフィス
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="weekend_activity" value="creative"
+                                                required>カフェやラウンジ
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="weekend_activity" value="casual" required>自宅
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="weekend_activity" value="sports" required>スポーツ
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="weekend_activity" value="outdoor" required>アウトドア
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="quiz-question" id="question2">
+                                    <p>あなたの性別は？</p>
+                                    <div class="quiz-btn">
+                                        <label>
+                                            <input type="radio" name="gender_age" value="male" required>男性
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="gender_age" value="female" required>女性
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if recommendation %}
+                                <div class="quiz-result">
+                                    <h3>結果</h3>
+                                    <p>{{ recommendation }}</p>
+                                </div>
+                                {% endif %}
+
+                                <div class="button-container">
+                                    <a href="/" class="btn">リセット</a>
+                                    {% if request.path == '/' %}
+                                    <button type="submit">結果を表示</button>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+
+        const quizState = {};
+        const slideIndexKey = 'currentSlideIndex';
+
+        window.addEventListener('load', function () {
+            const swiperContainers = document.querySelectorAll('.swiper-container');
+
+            swiperContainers.forEach(function (container, index) {
+                // ここでユニークなキーを生成します
+                const slideIndexKey = `swiper-slide-index-${index}`;
+                // localStorageから取得した値を数値に変換します
+                const savedSlideIndex = parseInt(localStorage.getItem(slideIndexKey), 10) || 0;
+                console.log(savedSlideIndex);
+
+                const swiper = new Swiper(container, {
+                    loop: true,
+                    pagination: {
+                        el: container.querySelector('.swiper-pagination'),
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: container.querySelector('.swiper-button-next'),
+                        prevEl: container.querySelector('.swiper-button-prev'),
+                    },
+                    initialSlide: savedSlideIndex,
+                });
+
+                swiper.on('slideChange', function () {
+                    // 実際のスライドのインデックスを保存します
+                    let realIndex = swiper.realIndex;
+                    localStorage.setItem(slideIndexKey, realIndex);
+                });
+            });
+        });
+
+        function displayImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const uploadedImage = document.getElementById('uploadedImage');
+                    uploadedImage.src = event.target.result;
+                    uploadedImage.style.display = 'block';
+                    localStorage.setItem('lastUploaded', event.target.result);
+                    document.getElementById('labelText').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showResults() {
+            // quizStateオブジェクトから回答を取得
+            const weekendActivity = quizState['question1'];
+            const fashionStyle = quizState['question2'];
+            const glassesPriority = quizState['question3'];
+
+            // quizAnswersオブジェクトを生成
+            const quizAnswers = {
+                weekendActivity: weekendActivity,
+                fashionStyle: fashionStyle,
+                glassesPriority: glassesPriority
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // /predict/ ページでのみ、最後にアップロードした画像を表示する
+            if (window.location.pathname === '/predict/') {
+                const lastUploaded = localStorage.getItem('lastUploaded');
+                if (lastUploaded) {
+                    const uploadedImage = document.getElementById('uploadedImage');
+                    uploadedImage.src = lastUploaded;
+                    uploadedImage.style.display = 'block';
+                    document.getElementById('labelText').style.display = 'none'; // テキストを非表示にする
+                }
+            } else {
+                // 他のページでは、画像プレビューをクリアし、localStorage の lastUploaded もクリアする
+                const uploadedImage = document.getElementById('uploadedImage');
+                uploadedImage.style.display = 'none';
+                uploadedImage.src = '';
+                localStorage.removeItem('lastUploaded'); // ここで localStorage から画像を削除する
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const outer = document.getElementById('outer');
+                outer.classList.add('fade-in');
+            });
+        });
+    </script>
+    <footer>©2023 Fami Ishikawa</footer>
+</body>
+
+</html>
